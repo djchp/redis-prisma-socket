@@ -15,7 +15,7 @@ import { FriendListContext } from "../pages/Home";
 import AddFriendModal from "./AddFriendModal";
 
 const Friendsbar = () => {
-  const { Fl, setFl } = useContext(FriendListContext);
+  const { Fl } = useContext(FriendListContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   // console.log(Fl)
   return (
