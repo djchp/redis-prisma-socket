@@ -28,7 +28,6 @@ const {
 const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL,
-    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE", "PATCH"],
     credentials: true,
   },
 });
@@ -37,11 +36,10 @@ app.use(helmet());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
-    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE", "PATCH"],
     credentials: true,
   })
 );
-
+app.use(express.json());
 app.use(
   session({
     name: "session",
@@ -53,16 +51,17 @@ app.use(
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
-      secure: auto,
+      secure: "auto",
+      sameSite: "lax"
     },
   })
 );
-
-app.use(express.json());
-app.set("trust proxy", 1);
-app.use(express.urlencoded({ extended: true }));
-
 app.use("/api", authRoutes);
+
+app.set("trust proxy", 1);
+// app.use(express.urlencoded({ extended: true }));
+
+
 
 io.use(wrap(serverSession));
 io.use(socketAuthorizer);
