@@ -5,7 +5,7 @@ import { AccountContext } from "./AccountContext";
 
 const ProtectedRoutes = () => {
     const { auth } = useContext(AccountContext);
-    // console.log(auth.isLogged)
+    
     const authHandler = () => {
       switch (auth.isLogged) {
         default:

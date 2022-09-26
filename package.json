@@ -1,0 +1,13 @@
+{
+  "name": "projectmono",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "workspaces":[
+    "packages/*"
+  ],
+  "scripts": {
+    "build:client": "npm workspace redischat build"
+  }
+}
