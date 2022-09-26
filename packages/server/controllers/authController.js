@@ -21,7 +21,7 @@ const auth_validate = (req, res, next) => {
   formSchema
     .validate(formData)
     .catch((err) => {
-      res.status(422).send().json("good");
+      res.status(422).json("good");
       console.log("done");
       console.log(err.errors);
     })
@@ -34,7 +34,7 @@ const auth_validate = (req, res, next) => {
 
 const auth_login = async (req, res, next) => {
   if (req.session.userId) {
-    res.status(500).send("you are logged in");
+    res.status(500)
     return;
   }
 
@@ -49,7 +49,7 @@ const auth_login = async (req, res, next) => {
     });
     
     const isPasswordCorr = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorr) res.send("wrong password");
+    if (!isPasswordCorr) res
     
     req.session.user ={
       username: req.body.username,
@@ -57,10 +57,10 @@ const auth_login = async (req, res, next) => {
       userId: user.userId
     }
     // console.log(req.session.user)
-    res.status(200).send("auth complete");
+    res.status(200)
   } catch (error) {
     if (!user) {
-      res.status(401).send("wrong")
+      res.status(401)
     }
   }
 };
@@ -79,12 +79,12 @@ const auth_register = async (req, res, next) => {
   } catch {
     res
       .status(400)
-      .send([{ instancePath: "username Availability", message: "Error" }]);
+      
   }
   if (usernameCheck)
     res
       .status(500)
-      .send([{ instancePath: "username", message: "username taken" }]);
+      
   else {
     const saltRound = 10;
     let salted_pw = await bcrypt.hash(password, saltRound);
@@ -98,7 +98,7 @@ const auth_register = async (req, res, next) => {
         },
       });
     } catch {
-      res.status(500).send([{ instancePath: "Err", message: "Err" }]);
+      res.status(500)
       return;
     }
   }
@@ -124,7 +124,7 @@ const auth_user = async (req, res) => {
       res.status(500).json("Something Went Wrong {auth}");
     }
   } else {
-    res.status(401).send("please login");
+    res.status(401)
   }
 };
 
