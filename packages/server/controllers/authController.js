@@ -34,97 +34,83 @@ const auth_validate = (req, res, next) => {
 
 const auth_login = async (req, res, next) => {
   if (req.session.userId) {
-    res.status(500)
+    res.status(500);
     return;
   }
 
   const { username, password } = req.body;
-  let user;
 
-  try {
-    user = await prisma.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
-    
+  const user = await prisma.user.findUnique({
+    where: {
+      username: username,
+    },
+  });
+  console.log(user)
+  if (user !== null) {
     const isPasswordCorr = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorr) res
-    
-    req.session.user ={
-      username: req.body.username,
-      id: user.id,
-      userId: user.userId
+    if (isPasswordCorr) {
+
+      req.session.user = {
+        username: req.body.username,
+        id: user.id,
+        userId: user.userId,
+      };
+      res.json("good credentials")
+    } else {
+      res.json("wrong credentials")
     }
-    // console.log(req.session.user)
-    res.status(200)
-  } catch (error) {
-    if (!user) {
-      res.status(401)
-    }
+  } else {
+    res.json("username not found")
   }
 };
 
 const auth_register = async (req, res, next) => {
   const { username, password } = req.body;
 
-  let usernameCheck;
+  const usernameCheck = await prisma.user.findUnique({
+    where: {
+      username: username,
+    },
+  });
+  console.log(usernameCheck);
 
-  try {
-    usernameCheck = await prisma.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
-  } catch {
-    res
-      .status(400)
-      
-  }
-  if (usernameCheck)
-    res
-      .status(500)
-      
-  else {
+  if (usernameCheck === null) {
     const saltRound = 10;
     let salted_pw = await bcrypt.hash(password, saltRound);
 
-    try {
-      await prisma.user.create({
-        data: {
-          username: username,
-          password: salted_pw,
-          userId: uuidv4(),
-        },
-      });
-    } catch {
-      res.status(500)
-      return;
-    }
+    await prisma.user.create({
+      data: {
+        username: username,
+        password: salted_pw,
+        userId: uuidv4(),
+      },
+    });
+    res.json("user created")
+  } else {
+    res.json("username taken");
   }
 };
 
 const auth_user = async (req, res) => {
-  
   if (req.session.user) {
     try {
       const user = await prisma.user.findUnique({
         where: {
-          username: req.session.user.username
+          username: req.session.user.username,
         },
       });
       // console.log(user)
       if (!user) res.status(401).json("User Not Found");
       const data = {
         username: user.username,
-        isLogged: true
+        isLogged: true,
       };
       res.status(200).json(data);
     } catch {
       res.status(500).json("Something Went Wrong {auth}");
     }
   } else {
-    res.status(401)
+    res.status(401);
   }
 };
 
